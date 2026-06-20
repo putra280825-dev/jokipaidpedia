@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - PAID PEDIA</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Admin specific styles */
+    .admin-body {
+      background: var(--bg-primary);
+      min-height: 100vh;
+    }
+    
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: 
+        radial-gradient(circle at 30% 50%, rgba(168,85,247,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 50%, rgba(59,130,246,0.15) 0%, transparent 50%);
+    }
+    
+    .login-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 50px 40px;
+      max-width: 420px;
+      width: 100%;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .login-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-logo i {
+      font-size: 3rem;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px var(--purple-glow));
+    }
+    
+    .login-logo h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      margin-top: 10px;
+      background: linear-gradient(135deg, var(--purple-light), var(--blue-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .login-logo p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 15px var(--purple-glow);
+    }
+    
+    .login-error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .login-error.show {
+      display: block;
+    }
+    
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: var(--gradient-main);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px var(--purple-glow);
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--purple-glow);
+    }
+    
+    .login-hint {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    
+    /* Admin Dashboard */
+    .admin-dashboard {
+      display: none;
+      min-height: 100vh;
+    }
+    
+    .admin-dashboard.active {
+      display: block;
+    }
+    
+    .admin-header {
+      background: rgba(10,10,15,0.9);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .admin-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--purple-light), var(--blue-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .admin-badge {
+      padding: 4px 10px;
+      background: var(--gradient-main);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 50px;
+      text-transform: uppercase;
+    }
+    
+    .admin-header-right {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .admin-btn {
+      padding: 10px 18px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-btn:hover {
+      background: var(--glass);
+      border-color: var(--purple);
+    }
+    
+    .admin-btn.danger {
+      color: #f87171;
+    }
+    
+    .admin-btn.danger:hover {
+      border-color: #f87171;
+    }
+    
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 65px);
+    }
+    
+    .admin-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--glass-border);
+      padding: 24px 16px;
+      position: sticky;
+      top: 65px;
+      height: calc(100vh - 65px);
+      overflow-y: auto;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu a:hover {
+      background: var(--glass);
+      color: var(--text-primary);
+    }
+    
+    .sidebar-menu a.active {
+      background: var(--gradient-main);
+      color: white;
+      box-shadow: 0 5px 15px var(--purple-glow);
+    }
+    
+    .sidebar-menu a i {
+      width: 20px;
+      text-align: center;
+    }
+    
+    .admin-content {
+      padding: 30px;
+      overflow-y: auto;
+    }
+    
+    .admin-section {
+      display: none;
+    }
+    
+    .admin-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .admin-section-header {
+      margin-bottom: 30px;
+    }
+    
+    .admin-section-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    
+    .admin-section-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .admin-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .admin-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .admin-card-title i {
+      color: var(--purple);
+    }
+    
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    
+    .admin-item-card {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-item-card:hover {
+      border-color: var(--purple);
+      transform: translateY(-3px);
+    }
+    
+    .admin-item-card h4 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+    
+    .admin-item-card .item-price {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    
+    .admin-item-card .item-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+    }
+    
+    .admin-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    
+    .icon-btn:hover {
+      background: var(--purple);
+      border-color: transparent;
+    }
+    
+    .icon-btn.danger:hover {
+      background: #ef4444;
+    }
+    
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--gradient-main);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--purple-glow);
+      margin-bottom: 20px;
+    }
+    
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px var(--purple-glow);
+    }
+    
+    .btn-save {
+      padding: 12px 28px;
+      background: var(--gradient-main);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--purple-glow);
+    }
+    
+    .btn-save:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .modal-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+    }
+    
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+    
+    .modal-close:hover {
+      background: #ef4444;
+      border-color: transparent;
+    }
+    
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+    
+    .btn-secondary {
+      padding: 10px 20px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    textarea.form-input {
+      resize: vertical;
+      min-height: 80px;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    /* Theme Customizer */
+    .color-picker-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .color-picker-group label {
+      flex: 1;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .color-input {
+      width: 50px;
+      height: 40px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+    }
+    
+    .preset-themes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .preset-theme {
+      padding: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+    
+    .preset-theme:hover {
+      transform: translateY(-3px);
+      border-color: var(--text-primary);
+    }
+    
+    /* Section Visibility */
+    .section-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: move;
+    }
+    
+    .section-toggle.dragging {
+      opacity: 0.5;
+      border-color: var(--purple);
+    }
+    
+    .section-toggle-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .section-toggle-info i {
+      color: var(--text-muted);
+      cursor: grab;
+    }
+    
+    .section-toggle-info span {
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider-toggle {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 24px;
+      transition: 0.3s;
+    }
+    
+    .slider-toggle:before {
+      content: '';
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    
+    input:checked + .slider-toggle {
+      background: var(--gradient-main);
+    }
+    
+    input:checked + .slider-toggle:before {
+      transform: translateX(20px);
+    }
+    
+    .file-upload {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .file-upload input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-upload-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--glass);
+      border: 1px dashed var(--glass-border);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+    
+    .file-upload-label:hover {
+      border-color: var(--purple);
+      color: var(--text-primary);
+    }
+    
+    .preview-img {
+      max-width: 200px;
+      max-height: 100px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: white;
+      background: var(--gradient-main);
+      margin-bottom: 16px;
+      box-shadow: 0 0 15px var(--purple-glow);
+    }
+    
+    .stat-card-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    
+    .stat-card-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+      .admin-sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .sidebar-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .sidebar-menu a {
+        flex: 1;
+        min-width: 100px;
+        justify-content: center;
+        font-size: 0.8rem;
+      }
+      .sidebar-menu a span {
+        display: none;
+      }
+      .admin-content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- Login Screen -->
+  <div class="login-wrapper" id="loginWrapper">
+    <div class="login-card">
+      <div class="login-logo">
+        <i class="fas fa-crown"></i>
+        <h1>PAID PEDIA</h1>
+        <p>Admin Panel Login</p>
+      </div>
+      <div class="login-error" id="loginError">
+        <i class="fas fa-exclamation-circle"></i> <span id="loginErrorMsg">Username atau password salah!</span>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Username</label>
+          <input type="text" class="form-input" id="loginUsername" placeholder="Masukkan username" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="Masukkan password" required>
+        </div>
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </form>
+      <div class="login-hint">
+        Default: admin / admin123
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div class="admin-dashboard" id="adminDashboard">
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <div class="admin-logo">
+          <i class="fas fa-crown"></i>
+          <span>PAID PEDIA</span>
+        </div>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="admin-header-right">
+        <a href="index.html" class="admin-btn" target="_blank">
+          <i class="fas fa-external-link-alt"></i> Lihat Website
+        </a>
+        <button class="admin-btn danger" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <ul class="sidebar-menu">
+          <li><a href="#" class="active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="#" data-tab="general"><i class="fas fa-cog"></i> <span>Pengaturan Umum</span></a></li>
+          <li><a href="#" data-tab="services"><i class="fas fa-gamepad"></i> <span>Layanan Joki</span></a></li>
+          <li><a href="#" data-tab="pricelist"><i class="fas fa-tags"></i> <span>Pricelist</span></a></li>
+          <li><a href="#" data-tab="testimonials"><i class="fas fa-comments"></i> <span>Testimoni</span></a></li>
+          <li><a href="#" data-tab="portfolio"><i class="fas fa-images"></i> <span>Portfolio</span></a></li>
+          <li><a href="#" data-tab="sections"><i class="fas fa-bars"></i> <span>Section & Urutan</span></a></li>
+          <li><a href="#" data-tab="theme"><i class="fas fa-palette"></i> <span>Theme Customizer</span></a></li>
+          <li><a href="#" data-tab="account"><i class="fas fa-user-shield"></i> <span>Akun Admin</span></a></li>
+        </ul>
+      </aside>
+
+      <div class="admin-content">
+        <!-- Dashboard -->
+        <div class="admin-section active" id="tab-dashboard">
+          <div class="admin-section-header">
+            <h2>Dashboard</h2>
+            <p>Selamat datang di panel admin PAID PEDIA</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-gamepad"></i></div>
+              <div class="stat-card-value" id="statServices">0</div>
+              <div class="stat-card-label">Total Layanan</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-tags"></i></div>
+              <div class="stat-card-value" id="statPricelist">0</div>
+              <div class="stat-card-label">Item Pricelist</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-comments"></i></div>
+              <div class="stat-card-value" id="statTestimonials">0</div>
+              <div class="stat-card-label">Testimoni</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-images"></i></div>
+              <div class="stat-card-value" id="statPortfolio">0</div>
+              <div class="stat-card-label">Portfolio</div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title"><i class="fas fa-info-circle"></i> Informasi</div>
+            <p style="color:var(--text-secondary); line-height:1.7;">
+              Selamat datang di Admin Panel PAID PEDIA. Dari sini Anda dapat mengelola seluruh konten website 
+              termasuk layanan joki, pricelist, testimoni, portfolio, tampilan tema, dan urutan section. 
+              Semua perubahan akan otomatis tersimpan dan langsung tampil di website utama.
+            </p>
+            <p style="color:var(--text-muted); margin-top:12px; font-size:0.85rem;">
+              <i class="fas fa-lightbulb"></i> Tip: Gunakan tab di samping untuk navigasi cepat antar fitur.
+            </p>
+          </div>
+        </div>
+
+        <!-- General Settings -->
+        <div class="admin-section" id="tab-general">
+          <div class="admin-section-header">
+            <h2>Pengaturan Umum</h2>
+            <p>Ubah nama website, tagline, dan kontak</p>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title"><i class="fas fa-cog"></i> Konfigurasi Website</div>
+            <div class="form-group">
+              <label>Nama Website</label>
+              <input type="text" class="form-input" id="cfgSiteName" placeholder="PAID PEDIA">
+            </div>
+            <div class="form-group">
+              <label>Tagline</label>
+              <input type="text" class="form-input" id="cfgTagline" placeholder="Joki MLBB Cepat, Aman, dan Terpercaya">
+            </div>
+            <div class="form-group">
+              <label>Nomor WhatsApp</label>
+              <input type="text" class="form-input" id="cfgWhatsapp" placeholder="081389976472">
+            </div>
+            <div class="form-group">
+              <label>Username Instagram (tanpa @)</label>
+              <input type="text" class="form-input" id="cfgInstagram" placeholder="wannnnnn2805">
+            </div>
+            <div class="form-group">
+              <label>Banner Hero (Opsional)</label>
+              <div class="file-upload">
+                <label class="file-upload-label">
+                  <i class="fas fa-upload"></i> Pilih Gambar
+                  <input type="file" id="cfgBanner" accept="image/*">
+                </label>
+              </div>
+              <img id="bannerPreview" class="preview-img" style="display:none;">
+              <button class="admin-btn danger" id="removeBanner" style="margin-top:10px; display:none;">
+                <i class="fas fa-trash"></i> Hapus Banner
+              </button>
+            </div>
+            <button class="btn-save" id="saveGeneral">
+              <i class="fas fa-save"></i> Simpan Perubahan
+            </button>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="admin-section" id="tab-services">
+          <div class="admin-section-header">
+            <h2>Layanan Joki</h2>
+            <p>Kelola semua layanan joki MLBB</p>
+          </div>
+          <button class="btn-add" id="addService">
+            <i class="fas fa-plus"></i> Tambah Layanan
+          </button>
+          <div class="admin-grid" id="servicesList"></div>
+        </div>
+
+        <!-- Pricelist -->
+        <div class="admin-section" id="tab-pricelist">
+          <div class="admin-section-header">
+            <h2>Pricelist</h2>
+            <p>Kelola daftar harga joki</p>
+          </div>
+          <button class="btn-add" id="addPricelist">
+            <i class="fas fa-plus"></i> Tambah Item
+          </button>
+          <div class="admin-grid" id="pricelistList"></div>
+        </div>
+
+        <!-- Testimonials -->
+        <div class="admin-section" id="tab-testimonials">
+          <div class="admin-section-header">
+            <h2>Testimoni</h2>
+            <p>Kelola testimoni customer</p>
+          </div>
+          <button class="btn-add" id="addTestimonial">
+            <i class="fas fa-plus"></i> Tambah Testimoni
+          </button>
+          <div class="admin-grid" id="testimonialsList"></div>
+        </div>
+
+        <!-- Portfolio -->
+        <div class="admin-section" id="tab-portfolio">
+          <div class="admin-section-header">
+            <h2>Portfolio</h2>
+            <p>Kelola gallery hasil joki</p>
+          </div>
+          <button class="btn-add" id="addPortfolio">
+            <i class="fas fa-plus"></i> Tambah Portfolio
+          </button>
+          <div class="admin-grid" id="portfolioList"></div>
+        </div>
+
+        <!-- Sections -->
+        <div class="admin-section" id="tab-sections">
+          <div class="admin-section-header">
+            <h2>Section & Urutan</h2>
+            <p>Atur visibilitas dan urutan section homepage</p>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title"><i class="fas fa-bars"></i> Atur Section</div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
+              <i class="fas fa-info-circle"></i> Drag untuk mengubah urutan, toggle untuk show/hide
+            </p>
+            <div id="sectionsList"></div>
+          </div>
+        </div>
+
+        <!-- Theme -->
+        <div class="admin-section" id="tab-theme">
+          <div class="admin-section-header">
+            <h2>Theme Customizer</h2>
+            <p>Ubah warna tema website</p>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title"><i class="fas fa-palette"></i> Warna Kustom</div>
+            <div class="color-picker-group">
+              <label>Warna Utama (Purple)</label>
+              <input type="color" class="color-input" id="themePurple" value="#a855f7">
+            </div>
+            <div class="color-picker-group">
+              <label>Warna Sekunder (Blue)</label>
+              <input type="color" class="color-input" id="themeBlue" value="#3b82f6">
+            </div>
+            <button class="btn-save" id="saveTheme" style="margin-top:10px;">
+              <i class="fas fa-save"></i> Simpan Tema
+            </button>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title"><i class="fas fa-magic"></i> Preset Tema</div>
+            <div class="preset-themes" id="presetThemes"></div>
+          </div>
+        </div>
+
+        <!-- Account -->
+        <div class="admin-section" id="tab-account">
+          <div class="admin-section-header">
+            <h2>Akun Admin</h2>
+            <p>Ubah username dan password admin</p>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title"><i class="fas fa-user-shield"></i> Kredensial Admin</div>
+            <div class="form-group">
+              <label>Username Baru</label>
+              <input type="text" class="form-input" id="newUsername" placeholder="Masukkan username baru">
+            </div>
+            <div class="form-group">
+              <label>Password Baru</label>
+              <input type="password" class="form-input" id="newPassword" placeholder="Masukkan password baru">
+            </div>
+            <div class="form-group">
+              <label>Konfirmasi Password</label>
+              <input type="password" class="form-input" id="confirmPassword" placeholder="Ulangi password baru">
+            </div>
+            <button class="btn-save" id="saveAccount">
+              <i class="fas fa-save"></i> Update Akun
+            </button>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title" style="color:#f87171;"><i class="fas fa-exclamation-triangle"></i> Reset Data</div>
+            <p style="color:var(--text-secondary); margin-bottom:16px;">
+              Hapus semua data dan kembalikan ke pengaturan default. Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <button class="admin-btn danger" id="resetData">
+              <i class="fas fa-trash"></i> Reset Semua Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal</h3>
+        <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
